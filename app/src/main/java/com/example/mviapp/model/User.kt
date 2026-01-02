@@ -1,4 +1,4 @@
-package com.example.mviapp
+package com.example.mviapp.model
 
 data class User(
     val id: Int,

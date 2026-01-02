@@ -1,4 +1,4 @@
-package com.example.mviapp
+package com.example.mviapp.mvi
 
 sealed class UserEffect {
     object NavigateToProfile : UserEffect()

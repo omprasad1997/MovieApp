@@ -1,4 +1,4 @@
-package com.example.mviapp
+package com.example.mviapp.mvi
 
 import com.example.mviapp.model.User
 

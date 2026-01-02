@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.mviapp.UserIntent
+import com.example.mviapp.mvi.UserIntent
 
 //Step 2 Create Screens
 @Composable

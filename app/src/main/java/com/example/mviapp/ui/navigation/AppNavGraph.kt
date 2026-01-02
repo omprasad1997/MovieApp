@@ -12,11 +12,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mviapp.UserEffect
+import com.example.mviapp.mvi.UserEffect
 import com.example.mviapp.ui.home.HomeScreen
 import com.example.mviapp.ui.profile.ProfileScreen
 import com.example.mviapp.ui.shared.SharedViewModel
-import com.example.mviapp.model.User
 
 //Step 3 Setup Navigation
 @Composable

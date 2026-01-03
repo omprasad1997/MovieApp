@@ -1,51 +1,89 @@
 package com.example.mviapp.ui.shared
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mviapp.data.model.User
+import com.example.mviapp.data.repository.MovieRepository
 import com.example.mviapp.mvi.UserEffect
 import com.example.mviapp.mvi.UserIntent
 import com.example.mviapp.mvi.UserState
-import com.example.mviapp.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val repository: MovieRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UserState())
+    // ---------- STATE ----------
+    private val _state = MutableStateFlow(
+        UserState()
+    )
     val state: StateFlow<UserState> = _state
 
-    private val _effect = Channel<UserEffect>()
-    val effect = _effect.receiveAsFlow()
+    // ---------- EFFECT ----------
+    private val _effect = MutableSharedFlow<UserEffect>()
+    val effect = _effect.asSharedFlow()
 
+    // ---------- INTENT ----------
     fun handleIntent(intent: UserIntent) {
         when (intent) {
 
             is UserIntent.SelectUser -> {
                 val user = User(intent.id, intent.name)
 
-                _state.value = UserState(user)
+                _state.value = _state.value.copy(
+                    user = user
+                )
 
-                sendEffect(UserEffect.NavigateToProfile)
+                emitEffect(UserEffect.NavigateToProfile)
+            }
+
+            is UserIntent.SearchMovie -> {
+                searchMovies(intent.query)
             }
 
             UserIntent.BackClicked -> {
-                sendEffect(UserEffect.NavigateBack)
+                emitEffect(UserEffect.NavigateBack)
             }
         }
     }
 
-    private fun sendEffect(effect: UserEffect) {
+    // ---------- BUSINESS LOGIC ----------
+    private fun searchMovies(query: String) {
         viewModelScope.launch {
-            _effect.send(effect)
+
+            _state.value = _state.value.copy(
+                isLoading = true,
+                error = null
+            )
+
+            try {
+                val movies = repository.searchMovies(query)
+
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    movies = movies
+                )
+
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Something went wrong"
+                )
+            }
+        }
+    }
+
+    // ---------- EFFECT EMITTER ----------
+    private fun emitEffect(effect: UserEffect) {
+        viewModelScope.launch {
+            _effect.emit(effect)
         }
     }
 }

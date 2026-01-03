@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,76 +31,103 @@ class SharedViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<UserEffect>()
     val effect = _effect.asSharedFlow()
 
-    // for debounce
+    // ---------- DEBOUNCE ----------
     private var searchJob: Job? = null
 
     // ---------- INTENT ----------
     fun handleIntent(intent: UserIntent) {
         when (intent) {
-
-            is UserIntent.SelectUser -> {
-                val user = User(intent.id, intent.name)
-
-                _state.value = _state.value.copy(
-                    user = user
-                )
-
-                emitEffect(UserEffect.NavigateToProfile)
-            }
-
-            is UserIntent.SearchMovie -> {
-                debounceSearch(intent.query)
-            }
-
-            is UserIntent.SelectMovie -> {
-                _state.value = _state.value.copy(
-                    selectedMovie = intent.movie
-                )
-                emitEffect(UserEffect.NavigateToMovieDetails)
-            }
-
-            UserIntent.BackClicked -> {
-                emitEffect(UserEffect.NavigateBack)
-            }
+            is UserIntent.SearchMovie -> onSearch(intent.query)
+            is UserIntent.SelectMovie -> onMovieSelected(intent.imdbId)
+            UserIntent.LoadMovieDetails -> loadMovieDetails()
+            UserIntent.BackClicked -> emitEffect(UserEffect.NavigateBack)
         }
     }
 
-    private fun debounceSearch(query: String) {
+    // ---------- SEARCH ----------
+    private fun onSearch(query: String) {
         searchJob?.cancel()
 
+        if (query.isBlank()) {
+            _state.update {
+                it.copy(movies = emptyList(), error = null)
+            }
+            return
+        }
+
         searchJob = viewModelScope.launch {
-            delay(500) // ✅ debounce
+            delay(500) // debounce
             searchMovies(query)
         }
     }
 
-    // ---------- BUSINESS LOGIC ----------
     private suspend fun searchMovies(query: String) {
-        if (query.isBlank()) return
-
-        _state.value = _state.value.copy(
-            isLoading = true,
-            error = null
-        )
+        _state.update { it.copy(isSearchLoading = true, error = null) }
 
         try {
-            val movies = repository.searchMovies(query)
-            _state.value = _state.value.copy(
-                isLoading = false,
-                movies = movies
-            )
+            val movies = repository
+                .searchMovies(query)
+                .distinctBy { it.id }
+
+            _state.update {
+                it.copy(
+                    isSearchLoading = false,
+                    movies = movies,
+                    error = null
+                )
+            }
         } catch (e: Exception) {
-            _state.value = _state.value.copy(
-                isLoading = false,
-                error = e.message ?: "Something went wrong"
-            )
+            _state.update {
+                it.copy(
+                    isSearchLoading = false,
+                    error = e.message
+                )
+            }
         }
     }
 
-    // ---------- EFFECT EMITTER ----------
+    // ---------- MOVIE DETAILS ----------
+    private fun onMovieSelected(imdbId: String) {
+        _state.update {
+            it.copy(
+                selectedImdbId = imdbId,
+                movieDetails = null
+            )
+        }
+        emitEffect(UserEffect.NavigateToMovieDetails)
+    }
+
+    private fun loadMovieDetails() {
+        val imdbId = _state.value.selectedImdbId ?: return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isDetailsLoading = true, error = null) }
+
+            try {
+                val details = repository.getMovieDetails(imdbId)
+                _state.update {
+                    it.copy(
+                        isDetailsLoading = false,
+                        movieDetails = details,
+                        error = null
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isDetailsLoading = false,
+                        error = e.message
+                    )
+                }
+            }
+        }
+    }
+
+    // ---------- EFFECT ----------
     private fun emitEffect(effect: UserEffect) {
         viewModelScope.launch {
             _effect.emit(effect)
         }
     }
 }
+

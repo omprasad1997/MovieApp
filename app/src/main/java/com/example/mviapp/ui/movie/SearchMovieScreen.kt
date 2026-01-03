@@ -1,4 +1,4 @@
-package com.example.mviapp.ui.home
+package com.example.mviapp.ui.movie
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,7 @@ import com.example.mviapp.mvi.UserState
 
 //Step 2 Create Screens
 @Composable
-fun HomeScreen(
+fun SearchMovieScreen(
     state: UserState,
     onIntent: (UserIntent) -> Unit
 ) {
@@ -73,7 +73,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
-            state.isLoading -> {
+            state.isSearchLoading -> {
                 LoadingView()
             }
 
@@ -90,7 +90,7 @@ fun HomeScreen(
                 MovieList(
                     movies = state.movies,
                     onMovieClick = { movie ->
-                        onIntent(UserIntent.SelectMovie(movie))
+                        onIntent(UserIntent.SelectMovie(movie.id))
                     }
                 )
             }

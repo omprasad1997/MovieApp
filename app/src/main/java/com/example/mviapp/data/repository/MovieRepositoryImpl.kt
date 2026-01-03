@@ -1,6 +1,7 @@
 package com.example.mviapp.data.repository
 
 import com.example.mviapp.data.model.Movie
+import com.example.mviapp.data.model.MovieDetails
 import com.example.mviapp.data.remote.OmdbApi
 import javax.inject.Inject
 
@@ -24,4 +25,24 @@ class MovieRepositoryImpl @Inject constructor(
             throw Exception(response.Error ?: "Unknown error")
         }
     }
+
+    override suspend fun getMovieDetails(imdbId: String): MovieDetails {
+        val response = api.getMovieDetails(imdbId)
+
+        if (response.Response == "True") {
+            return MovieDetails(
+                title = response.Title,
+                year = response.Year,
+                runtime = response.Runtime,
+                genre = response.Genre,
+                director = response.Director,
+                plot = response.Plot,
+                poster = response.Poster,
+                rating = response.imdbRating
+            )
+        } else {
+            throw Exception(response.Error ?: "Failed to load movie details")
+        }
+    }
+
 }

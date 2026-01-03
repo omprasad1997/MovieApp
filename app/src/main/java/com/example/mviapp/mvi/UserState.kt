@@ -7,5 +7,6 @@ data class UserState(
     val user: User? = null,
     val isLoading: Boolean = false,
     val movies: List<Movie> = emptyList(),
+    val selectedMovie: Movie? = null,
     val error: String? = null
 )

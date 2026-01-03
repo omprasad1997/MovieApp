@@ -8,6 +8,8 @@ import com.example.mviapp.mvi.UserEffect
 import com.example.mviapp.mvi.UserIntent
 import com.example.mviapp.mvi.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,14 +23,15 @@ class SharedViewModel @Inject constructor(
 ) : ViewModel() {
 
     // ---------- STATE ----------
-    private val _state = MutableStateFlow(
-        UserState()
-    )
+    private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state
 
     // ---------- EFFECT ----------
     private val _effect = MutableSharedFlow<UserEffect>()
     val effect = _effect.asSharedFlow()
+
+    // for debounce
+    private var searchJob: Job? = null
 
     // ---------- INTENT ----------
     fun handleIntent(intent: UserIntent) {
@@ -45,7 +48,14 @@ class SharedViewModel @Inject constructor(
             }
 
             is UserIntent.SearchMovie -> {
-                searchMovies(intent.query)
+                debounceSearch(intent.query)
+            }
+
+            is UserIntent.SelectMovie -> {
+                _state.value = _state.value.copy(
+                    selectedMovie = intent.movie
+                )
+                emitEffect(UserEffect.NavigateToMovieDetails)
             }
 
             UserIntent.BackClicked -> {
@@ -54,29 +64,35 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    private fun debounceSearch(query: String) {
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            delay(500) // ✅ debounce
+            searchMovies(query)
+        }
+    }
+
     // ---------- BUSINESS LOGIC ----------
-    private fun searchMovies(query: String) {
-        viewModelScope.launch {
+    private suspend fun searchMovies(query: String) {
+        if (query.isBlank()) return
 
+        _state.value = _state.value.copy(
+            isLoading = true,
+            error = null
+        )
+
+        try {
+            val movies = repository.searchMovies(query)
             _state.value = _state.value.copy(
-                isLoading = true,
-                error = null
+                isLoading = false,
+                movies = movies
             )
-
-            try {
-                val movies = repository.searchMovies(query)
-
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    movies = movies
-                )
-
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Something went wrong"
-                )
-            }
+        } catch (e: Exception) {
+            _state.value = _state.value.copy(
+                isLoading = false,
+                error = e.message ?: "Something went wrong"
+            )
         }
     }
 

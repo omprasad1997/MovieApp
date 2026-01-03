@@ -89,7 +89,8 @@ dependencies {
     implementation(libs.coroutines.android)
 
     /* ---------- Image Loading ---------- */
-    implementation(libs.glide)
+    implementation(libs.glide.v4160)
+    implementation(libs.compose)
 
     /* ---------- Browser ---------- */
     implementation(libs.androidx.browser)

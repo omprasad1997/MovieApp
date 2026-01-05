@@ -1,7 +1,7 @@
 package com.example.mviapp.di
 
 import com.example.mviapp.data.remote.ApiConstants
-import com.example.mviapp.data.remote.OmdbApi
+import com.example.mviapp.data.remote.OmdbApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,7 +38,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOmdbApi(retrofit: Retrofit): OmdbApi {
-        return retrofit.create(OmdbApi::class.java)
+    fun provideOmdbApiService(retrofit: Retrofit): OmdbApiService {
+        return retrofit.create(OmdbApiService::class.java)
     }
 }

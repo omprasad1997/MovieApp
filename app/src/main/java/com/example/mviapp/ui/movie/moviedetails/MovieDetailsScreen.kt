@@ -1,4 +1,4 @@
-package com.example.mviapp.ui.movie
+package com.example.mviapp.ui.movie.moviedetails
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,24 +22,23 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mviapp.R
-import com.example.mviapp.mvi.MovieScreenIntent
-import com.example.mviapp.mvi.MovieScreenState
+import com.example.mviapp.ui.movie.search.ErrorView
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MovieDetailsScreen(
-    state: MovieScreenState,
-    onIntent: (MovieScreenIntent) -> Unit,
+    state: MovieDetailsState,
+    onIntent: (MovieDetailsIntent) -> Unit,
     onBack: () -> Unit
 ) {
 
     // 🔹 Trigger API call once
     LaunchedEffect(Unit) {
-        onIntent(MovieScreenIntent.LoadMovieDetails)
+        onIntent(MovieDetailsIntent.LoadMovieDetails)
     }
 
     when {
-        state.isDetailsLoading -> {
+        state.isLoading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -51,7 +50,7 @@ fun MovieDetailsScreen(
         state.error != null -> {
             ErrorView(
                 message = state.error,
-                onRetry = { onIntent(MovieScreenIntent.LoadMovieDetails) }
+                onRetry = { onIntent(MovieDetailsIntent.LoadMovieDetails) }
             )
         }
 

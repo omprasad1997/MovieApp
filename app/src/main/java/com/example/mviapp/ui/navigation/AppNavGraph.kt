@@ -6,17 +6,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mviapp.mvi.MovieScreenEffect
-import com.example.mviapp.mvi.MovieScreenIntent
-import com.example.mviapp.ui.movie.SearchMovieScreen
-import com.example.mviapp.ui.movie.MovieDetailsScreen
-import com.example.mviapp.ui.shared.SharedViewModel
+import androidx.navigation.navArgument
+import com.example.mviapp.ui.movie.moviedetails.MovieDetailsEffect
+import com.example.mviapp.ui.movie.moviedetails.MovieDetailsIntent
+import com.example.mviapp.ui.movie.moviedetails.MovieDetailsScreen
+import com.example.mviapp.ui.movie.moviedetails.MovieDetailsViewModel
+import com.example.mviapp.ui.movie.search.SearchEffect
+import com.example.mviapp.ui.movie.search.SearchMovieScreen
+import com.example.mviapp.ui.movie.search.SearchViewModel
 
 //Step 3 Setup Navigation
 @Composable
@@ -26,46 +29,52 @@ fun AppNavGraph() {
     Scaffold { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Movie.route,
+            startDestination = Screen.SearchMovie.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             //“When the app navigates to this route, show this UI.”
-            composable(Screen.Movie.route) { entry ->
+            composable(Screen.SearchMovie.route) { entry ->
                 // Hilt ViewModel scoped to Home
-                val sharedViewModel: SharedViewModel = hiltViewModel(entry)
-
-                val state by sharedViewModel.state.collectAsState()
+                val searchViewModel: SearchViewModel = hiltViewModel()
+                val state by searchViewModel.state.collectAsState()
 
                 LaunchedEffect(Unit) {
-                    sharedViewModel.effect.collect { effect ->
+                    searchViewModel.effect.collect { effect ->
                         when (effect) {
-                            MovieScreenEffect.NavigateToMovieDetails ->
-                                navController.navigate(Screen.MovieDetails.route)
+                            is SearchEffect.NavigateToMovieDetails ->
+                                navController.navigate(Screen.MovieDetails.createRoute(effect.imdbId))
                             else -> Unit
                         }
                     }
                 }
 
-                SearchMovieScreen(state = state, onIntent = sharedViewModel::handleIntent)
+                SearchMovieScreen(state = state, onIntent = searchViewModel::handleIntent)
             }
 
-            composable(Screen.MovieDetails.route) { entry ->
+            composable(Screen.MovieDetails.route,
+                    arguments = listOf(
+                        navArgument("imdbId") { type = NavType.StringType }
+                    )
+                ) { entry ->
 
-                val parentEntry = remember(entry) {
-                    navController.getBackStackEntry(Screen.Movie.route)
+                val movieDetailsViewModel: MovieDetailsViewModel = hiltViewModel()
+
+                val state by movieDetailsViewModel.state.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    movieDetailsViewModel.effect.collect { effect ->
+                        when (effect) {
+                            MovieDetailsEffect.NavigateBack -> navController.popBackStack()
+                            else -> Unit
+                        }
+                    }
                 }
-
-                val viewModel: SharedViewModel =
-                    hiltViewModel(parentEntry)
-
-                val state by viewModel.state.collectAsState()
 
                 MovieDetailsScreen(
                     state = state,
-                    onIntent = viewModel::handleIntent,
+                    onIntent = movieDetailsViewModel::handleIntent,
                     onBack = {
-                        viewModel.handleIntent(MovieScreenIntent.BackClicked)
-                        navController.popBackStack()
+                        movieDetailsViewModel.handleIntent(MovieDetailsIntent.BackClicked)
                     }
                 )
             }

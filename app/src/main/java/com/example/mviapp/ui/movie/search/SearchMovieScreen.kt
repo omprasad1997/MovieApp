@@ -1,4 +1,4 @@
-package com.example.mviapp.ui.movie
+package com.example.mviapp.ui.movie.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,14 +39,12 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mviapp.data.model.Movie
-import com.example.mviapp.mvi.MovieScreenIntent
-import com.example.mviapp.mvi.MovieScreenState
 
 //Step 2 Create Screens
 @Composable
 fun SearchMovieScreen(
-    state: MovieScreenState,
-    onIntent: (MovieScreenIntent) -> Unit
+    state: SearchState,
+    onIntent: (SearchIntent) -> Unit
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -63,7 +61,7 @@ fun SearchMovieScreen(
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
-                onIntent(MovieScreenIntent.SearchMovie(it))
+                onIntent(SearchIntent.SearchMovie(it))
             },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Search movies...") },
@@ -73,7 +71,7 @@ fun SearchMovieScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
-            state.isSearchLoading -> {
+            state.isLoading -> {
                 LoadingView()
             }
 
@@ -81,7 +79,7 @@ fun SearchMovieScreen(
                 ErrorView(
                     message = state.error,
                     onRetry = {
-                        onIntent(MovieScreenIntent.SearchMovie(searchQuery))
+                        onIntent(SearchIntent.SearchMovie(searchQuery))
                     }
                 )
             }
@@ -90,7 +88,7 @@ fun SearchMovieScreen(
                 MovieList(
                     movies = state.movies,
                     onMovieClick = { movie ->
-                        onIntent(MovieScreenIntent.SelectMovie(movie.id))
+                        onIntent(SearchIntent.SelectMovie(movie.id))
                     }
                 )
             }

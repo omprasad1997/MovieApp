@@ -1,6 +1,12 @@
 package com.example.mviapp.ui.navigation
 
 sealed class Screen(val route: String) {
-    object Movie : Screen("home")
-    object MovieDetails : Screen("movie_details")
+
+    object SearchMovie : Screen("search_movie")
+
+    object MovieDetails : Screen("movie_details/{imdbId}") {
+        fun createRoute(imdbId: String): String {
+            return "movie_details/$imdbId"
+        }
+    }
 }

@@ -5,7 +5,7 @@ import com.example.mviapp.data.model.MovieSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface OmdbApi {
+interface OmdbApiService {
 
     @GET("/")
     suspend fun searchMovies(

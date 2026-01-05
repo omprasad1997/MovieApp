@@ -2,11 +2,11 @@ package com.example.mviapp.data.repository
 
 import com.example.mviapp.data.model.Movie
 import com.example.mviapp.data.model.MovieDetails
-import com.example.mviapp.data.remote.OmdbApi
+import com.example.mviapp.data.remote.OmdbApiService
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val api: OmdbApi
+    private val api: OmdbApiService
 ) : MovieRepository {
 
     override suspend fun searchMovies(query: String): List<Movie> {

@@ -1,0 +1,51 @@
+┌──────────────────────┐
+│   Jetpack Compose UI │
+│  (Home / Details)    │
+└──────────┬───────────┘
+           │
+           │ User Actions
+           │ (Search, Click Movie)
+           ▼
+┌──────────────────────┐
+│      Intent          │
+│  (SearchMovie,       │
+│   SelectMovie,       │
+│   LoadDetails)       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   SharedViewModel    │
+│  (MVI Reducer)       │
+│                      │
+│  - Handles Intents   │
+│  - Calls Repository  │
+│  - Updates State     │
+│  - Emits Effects     │
+└───────┬────────┬─────┘
+        │        │
+        │        │
+        ▼        ▼
+┌────────────┐  ┌────────────────┐
+│   State    │  │     Effect     │
+│ (StateFlow)│  │ (SharedFlow)   │
+│            │  │                │
+│ - Movies   │  │ - Navigation   │
+│ - Loading  │  │ - One-time     │
+│ - Errors   │  │   actions      │
+└─────┬──────┘  └────────┬───────┘
+      │                   │
+      │                   ▼
+      │           ┌────────────────┐
+      │           │   NavGraph     │
+      │           │ (Compose Nav)  │
+      │           │                │
+      │           │ Handles route  │
+      │           │ transitions    │
+      │           └────────────────┘
+      │
+      ▼
+┌──────────────────────┐
+│   Compose UI Updates │
+│  (Recomposition)     │
+└──────────────────────┘

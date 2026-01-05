@@ -12,8 +12,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mviapp.mvi.UserEffect
-import com.example.mviapp.mvi.UserIntent
+import com.example.mviapp.mvi.MovieScreenEffect
+import com.example.mviapp.mvi.MovieScreenIntent
 import com.example.mviapp.ui.movie.SearchMovieScreen
 import com.example.mviapp.ui.movie.MovieDetailsScreen
 import com.example.mviapp.ui.shared.SharedViewModel
@@ -29,6 +29,7 @@ fun AppNavGraph() {
             startDestination = Screen.Movie.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+            //“When the app navigates to this route, show this UI.”
             composable(Screen.Movie.route) { entry ->
                 // Hilt ViewModel scoped to Home
                 val sharedViewModel: SharedViewModel = hiltViewModel(entry)
@@ -38,7 +39,7 @@ fun AppNavGraph() {
                 LaunchedEffect(Unit) {
                     sharedViewModel.effect.collect { effect ->
                         when (effect) {
-                            UserEffect.NavigateToMovieDetails ->
+                            MovieScreenEffect.NavigateToMovieDetails ->
                                 navController.navigate(Screen.MovieDetails.route)
                             else -> Unit
                         }
@@ -63,12 +64,11 @@ fun AppNavGraph() {
                     state = state,
                     onIntent = viewModel::handleIntent,
                     onBack = {
-                        viewModel.handleIntent(UserIntent.BackClicked)
+                        viewModel.handleIntent(MovieScreenIntent.BackClicked)
                         navController.popBackStack()
                     }
                 )
             }
-
         }
     }
 }

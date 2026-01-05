@@ -22,20 +22,20 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mviapp.R
-import com.example.mviapp.mvi.UserIntent
-import com.example.mviapp.mvi.UserState
+import com.example.mviapp.mvi.MovieScreenIntent
+import com.example.mviapp.mvi.MovieScreenState
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MovieDetailsScreen(
-    state: UserState,
-    onIntent: (UserIntent) -> Unit,
+    state: MovieScreenState,
+    onIntent: (MovieScreenIntent) -> Unit,
     onBack: () -> Unit
 ) {
 
     // 🔹 Trigger API call once
     LaunchedEffect(Unit) {
-        onIntent(UserIntent.LoadMovieDetails)
+        onIntent(MovieScreenIntent.LoadMovieDetails)
     }
 
     when {
@@ -51,7 +51,7 @@ fun MovieDetailsScreen(
         state.error != null -> {
             ErrorView(
                 message = state.error,
-                onRetry = { onIntent(UserIntent.LoadMovieDetails) }
+                onRetry = { onIntent(MovieScreenIntent.LoadMovieDetails) }
             )
         }
 

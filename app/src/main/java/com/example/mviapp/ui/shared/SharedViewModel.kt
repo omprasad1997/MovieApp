@@ -2,11 +2,10 @@ package com.example.mviapp.ui.shared
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mviapp.data.model.User
 import com.example.mviapp.data.repository.MovieRepository
-import com.example.mviapp.mvi.UserEffect
-import com.example.mviapp.mvi.UserIntent
-import com.example.mviapp.mvi.UserState
+import com.example.mviapp.mvi.MovieScreenEffect
+import com.example.mviapp.mvi.MovieScreenIntent
+import com.example.mviapp.mvi.MovieScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,23 +23,23 @@ class SharedViewModel @Inject constructor(
 ) : ViewModel() {
 
     // ---------- STATE ----------
-    private val _state = MutableStateFlow(UserState())
-    val state: StateFlow<UserState> = _state
+    private val _state = MutableStateFlow(MovieScreenState())
+    val state: StateFlow<MovieScreenState> = _state
 
     // ---------- EFFECT ----------
-    private val _effect = MutableSharedFlow<UserEffect>()
+    private val _effect = MutableSharedFlow<MovieScreenEffect>()
     val effect = _effect.asSharedFlow()
 
     // ---------- DEBOUNCE ----------
     private var searchJob: Job? = null
 
     // ---------- INTENT ----------
-    fun handleIntent(intent: UserIntent) {
+    fun handleIntent(intent: MovieScreenIntent) {
         when (intent) {
-            is UserIntent.SearchMovie -> onSearch(intent.query)
-            is UserIntent.SelectMovie -> onMovieSelected(intent.imdbId)
-            UserIntent.LoadMovieDetails -> loadMovieDetails()
-            UserIntent.BackClicked -> emitEffect(UserEffect.NavigateBack)
+            is MovieScreenIntent.SearchMovie -> onSearch(intent.query)
+            is MovieScreenIntent.SelectMovie -> onMovieSelected(intent.imdbId)
+            MovieScreenIntent.LoadMovieDetails -> loadMovieDetails()
+            MovieScreenIntent.BackClicked -> emitEffect(MovieScreenEffect.NavigateBack)
         }
     }
 
@@ -94,7 +93,7 @@ class SharedViewModel @Inject constructor(
                 movieDetails = null
             )
         }
-        emitEffect(UserEffect.NavigateToMovieDetails)
+        emitEffect(MovieScreenEffect.NavigateToMovieDetails)
     }
 
     private fun loadMovieDetails() {
@@ -124,7 +123,7 @@ class SharedViewModel @Inject constructor(
     }
 
     // ---------- EFFECT ----------
-    private fun emitEffect(effect: UserEffect) {
+    private fun emitEffect(effect: MovieScreenEffect) {
         viewModelScope.launch {
             _effect.emit(effect)
         }

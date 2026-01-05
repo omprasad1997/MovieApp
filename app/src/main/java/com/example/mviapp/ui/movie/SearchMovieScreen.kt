@@ -39,14 +39,14 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mviapp.data.model.Movie
-import com.example.mviapp.mvi.UserIntent
-import com.example.mviapp.mvi.UserState
+import com.example.mviapp.mvi.MovieScreenIntent
+import com.example.mviapp.mvi.MovieScreenState
 
 //Step 2 Create Screens
 @Composable
 fun SearchMovieScreen(
-    state: UserState,
-    onIntent: (UserIntent) -> Unit
+    state: MovieScreenState,
+    onIntent: (MovieScreenIntent) -> Unit
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -63,7 +63,7 @@ fun SearchMovieScreen(
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
-                onIntent(UserIntent.SearchMovie(it))
+                onIntent(MovieScreenIntent.SearchMovie(it))
             },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Search movies...") },
@@ -81,7 +81,7 @@ fun SearchMovieScreen(
                 ErrorView(
                     message = state.error,
                     onRetry = {
-                        onIntent(UserIntent.SearchMovie(searchQuery))
+                        onIntent(MovieScreenIntent.SearchMovie(searchQuery))
                     }
                 )
             }
@@ -90,7 +90,7 @@ fun SearchMovieScreen(
                 MovieList(
                     movies = state.movies,
                     onMovieClick = { movie ->
-                        onIntent(UserIntent.SelectMovie(movie.id))
+                        onIntent(MovieScreenIntent.SelectMovie(movie.id))
                     }
                 )
             }

@@ -21,6 +21,8 @@ class MovieRepositoryImpl @Inject constructor(
                     poster = it.Poster
                 )
             } ?: emptyList()
+        } else if (response.Error == "Too many results.") {
+            return emptyList()
         } else {
             throw Exception(response.Error ?: "Unknown error")
         }

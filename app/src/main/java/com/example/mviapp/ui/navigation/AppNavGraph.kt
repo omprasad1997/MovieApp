@@ -11,7 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mviapp.ui.movie.favourites.FavouritesScreen
-import com.example.mviapp.ui.movie.home.HomeScreen
+import com.example.mviapp.ui.movie.home.HomeScreenRoute
 import com.example.mviapp.ui.movie.moviedetails.MovieDetailsRoute
 import com.example.mviapp.ui.movie.search.SearchRoute
 
@@ -38,7 +38,7 @@ fun AppNavGraph() {
         ) {
             // HOME (placeholder)
             composable(Screen.Home.route) {
-                HomeScreen()
+                HomeScreenRoute(navController)
             }
 
             //“When the app navigates to this route, show this UI.”
@@ -46,7 +46,7 @@ fun AppNavGraph() {
                 SearchRoute(navController)
             }
 
-            // BOOKMARK (placeholder)
+            // FAVOURITES (placeholder)
             composable(Screen.Favourites.route) {
                 FavouritesScreen()
             }

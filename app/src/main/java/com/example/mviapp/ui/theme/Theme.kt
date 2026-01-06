@@ -33,25 +33,27 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+private val NetflixDarkColorScheme = darkColorScheme(
+    primary = NetflixRed,
+    onPrimary = NetflixWhite,
+
+    background = NetflixBlack,
+    onBackground = NetflixWhite,
+
+    surface = NetflixDarkGray,
+    onSurface = NetflixWhite,
+
+    onSurfaceVariant = NetflixGray,
+    secondary = NetflixRed
+)
+
+
 @Composable
-fun MVIAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+fun MviAppTheme(
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = NetflixDarkColorScheme,
         typography = Typography,
         content = content
     )

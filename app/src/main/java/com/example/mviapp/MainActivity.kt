@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.mviapp.ui.navigation.AppNavGraph
-import com.example.mviapp.ui.theme.MVIAppTheme
+import com.example.mviapp.ui.theme.MviAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MVIAppTheme {
+            MviAppTheme {
                 AppNavGraph()
             }
         }

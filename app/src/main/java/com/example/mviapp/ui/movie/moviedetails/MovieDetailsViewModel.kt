@@ -25,13 +25,10 @@ class MovieDetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow(MovieDetailsState())
     val state: StateFlow<MovieDetailsState> = _state
 
-    private val _effect = MutableSharedFlow<MovieDetailsEffect>()
-    val effect = _effect.asSharedFlow()
-
     fun handleIntent(intent: MovieDetailsIntent) {
         when (intent) {
             is MovieDetailsIntent.LoadMovieDetails -> loadMovieDetails()
-            is MovieDetailsIntent.BackClicked -> emitEffect(MovieDetailsEffect.NavigateBack)
+
         }
     }
 
@@ -52,9 +49,4 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun emitEffect(effect: MovieDetailsEffect) {
-        viewModelScope.launch {
-            _effect.emit(effect)
-        }
-    }
 }

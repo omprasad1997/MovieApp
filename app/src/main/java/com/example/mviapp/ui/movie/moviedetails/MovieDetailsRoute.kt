@@ -1,5 +1,6 @@
 package com.example.mviapp.ui.movie.moviedetails
 
+import MovieDetailsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,7 +15,6 @@ fun MovieDetailsRoute(navController : NavHostController) {
 
     MovieDetailsScreen(
         state = state,
-        onIntent = movieDetailsViewModel::handleIntent,
         onBack = {
             navController.popBackStack()
         }

@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mviapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +22,10 @@ class MovieDetailsViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(MovieDetailsState())
     val state: StateFlow<MovieDetailsState> = _state
+
+    init {
+        loadMovieDetails() // CALLED HERE
+    }
 
     fun handleIntent(intent: MovieDetailsIntent) {
         when (intent) {

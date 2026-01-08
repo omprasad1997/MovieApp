@@ -40,7 +40,15 @@ class MovieRepositoryImpl @Inject constructor(
                 director = response.Director,
                 plot = response.Plot,
                 poster = response.Poster,
-                rating = response.imdbRating
+                rating = response.imdbRating,
+                rated = response.Rated,
+                released = response.Released,
+                writer = response.Writer,
+                actors = response.Actors,
+                language = response.Language,
+                country = response.Country,
+                awards = response.Awards,
+                imdbID = response.imdbID
             )
         } else {
             throw Exception(response.Error ?: "Failed to load movie details")

@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +60,7 @@ fun MovieDetailsScreen(
                             R.drawable.ic_movie_placeholder
                         else movie.poster
 
+                    // 🎬 Poster Image
                     GlideImage(
                         model = posterModel,
                         contentDescription = movie.title,
@@ -66,7 +68,7 @@ fun MovieDetailsScreen(
                         contentScale = ContentScale.Crop
                     )
 
-                    // Gradient overlay
+                    // 🌑 Gradient Overlay
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -81,7 +83,7 @@ fun MovieDetailsScreen(
                             )
                     )
 
-                    //  Back button
+                    // 🔙 Back Button
                     IconButton(
                         onClick = onBack,
                         modifier = Modifier
@@ -99,8 +101,28 @@ fun MovieDetailsScreen(
                             tint = Color.White
                         )
                     }
+
+                    // ❤️ Favourite Button (UI only)
+                    IconButton(
+                        onClick = { /* no-op */ },
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .size(40.dp)
+                            .background(
+                                Color.Black.copy(alpha = 0.6f),
+                                CircleShape
+                            )
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.FavoriteBorder,
+                            contentDescription = "Favourite",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
+
 
             //  MOVIE INFO
             item {

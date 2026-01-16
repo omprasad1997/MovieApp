@@ -15,7 +15,9 @@ import com.example.mviapp.data.model.Movie
 @Composable
 fun TrendingMovieRow(
     movies: List<Movie>,
-    onMovieClick: (Movie) -> Unit
+    favouriteIds: Set<String>,            // ✅ ADD
+    onMovieClick: (Movie) -> Unit,
+    onFavouriteClick: (Movie) -> Unit     // ✅ ADD
 ) {
     val listState = rememberLazyListState()
 
@@ -29,8 +31,13 @@ fun TrendingMovieRow(
             items = movies,
             key = { it.id }
         ) { movie ->
+
+            val isFavourite = favouriteIds.contains(movie.id) // ✅ ADD
+
             TrendingMovieCard(
                 movie = movie,
+                isFavourite = isFavourite,                   // ✅ ADD
+                onFavouriteClick = { onFavouriteClick(movie) }, // ✅ ADD
                 onClick = { onMovieClick(movie) }
             )
         }

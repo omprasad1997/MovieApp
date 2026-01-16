@@ -1,12 +1,17 @@
 package com.example.mviapp.data.repository
 
+import com.example.mviapp.data.local.dao.FavouriteMovieDao
+import com.example.mviapp.data.local.entity.FavouriteMovieEntity
 import com.example.mviapp.data.model.Movie
 import com.example.mviapp.data.model.MovieDetails
 import com.example.mviapp.data.remote.OmdbApiService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val api: OmdbApiService
+    private val api: OmdbApiService,
+    private val favouriteDao: FavouriteMovieDao
 ) : MovieRepository {
 
     override suspend fun searchMovies(query: String): List<Movie> {
@@ -55,4 +60,43 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun addToFavourites(movie: Movie) {
+        favouriteDao.insert(
+            FavouriteMovieEntity(
+                imdbId = movie.id,
+                title = movie.title,
+                year = movie.year,
+                poster = movie.poster
+            )
+        )
+    }
+
+    override suspend fun removeFromFavourites(imdbId: String) {
+        favouriteDao.delete(imdbId)
+    }
+
+    override fun getFavouriteMovies(): Flow<List<Movie>> =
+        favouriteDao.getAllFavourites().map { list ->
+            list.map {
+                Movie(
+                    id = it.imdbId,
+                    title = it.title,
+                    year = it.year,
+                    poster = it.poster
+                )
+            }
+        }
+
+    override fun isFavourite(imdbId: String): Flow<Boolean> =
+        favouriteDao.isFavourite(imdbId)
+
+    override fun getFavouriteIds(): Flow<Set<String>> {
+        return favouriteDao
+            .getAllFavouriteIds()      // Flow<List<String>>
+            .map { it.toSet() }
+    }
+
 }
+
+
+

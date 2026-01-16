@@ -48,7 +48,13 @@ fun AppNavGraph() {
 
             // FAVOURITES (placeholder)
             composable(Screen.Favourites.route) {
-                FavouritesScreen()
+                FavouritesScreen(
+                    onMovieClick = { imdbId ->
+                        navController.navigate(
+                            Screen.MovieDetails.createRoute(imdbId)
+                        )
+                    }
+                )
             }
 
             // MOVIE DETAILS (no bottom nav logic here)

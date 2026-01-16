@@ -3,10 +3,14 @@ package com.example.mviapp.ui.movie.moviedetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mviapp.data.model.Movie
+import com.example.mviapp.data.model.MovieDetails
 import com.example.mviapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +29,20 @@ class MovieDetailsViewModel @Inject constructor(
 
     init {
         loadMovieDetails() // CALLED HERE
+        observeFavourites()
     }
+
+    private fun observeFavourites() {
+        viewModelScope.launch {
+            repository.getFavouriteIds().collect { ids ->
+                val isFav = ids.contains(imdbId)
+                _state.update {
+                    it.copy(isFavourite = isFav)
+                }
+            }
+        }
+    }
+
 
     fun handleIntent(intent: MovieDetailsIntent) {
         when (intent) {
@@ -47,6 +64,31 @@ class MovieDetailsViewModel @Inject constructor(
                 _state.update {
                     it.copy(isLoading = false, error = e.message)
                 }
+            }
+        }
+    }
+
+    val isFavourite: StateFlow<Boolean> =
+        repository.isFavourite(imdbId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = false
+            )
+
+    fun toggleFavourite(movie: MovieDetails) {
+        viewModelScope.launch {
+            if (isFavourite.value) {
+                repository.removeFromFavourites(movie.imdbID)
+            } else {
+                repository.addToFavourites(
+                    Movie(
+                        id = movie.imdbID,
+                        title = movie.title,
+                        year = movie.year,
+                        poster = movie.poster
+                    )
+                )
             }
         }
     }

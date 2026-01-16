@@ -21,12 +21,14 @@ fun HomeScreenRoute(navController: NavHostController) {
                         Screen.MovieDetails.createRoute(effect.imdbId)
                     )
                 }
+                else -> Unit
             }
         }
     }
 
     HomeScreen(
         state = state,
-        onIntent = viewModel::handleIntent
+        onIntent = viewModel::handleIntent,
+        effect = viewModel.effect // pass effect ONLY for snackbar
     )
 }

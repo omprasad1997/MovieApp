@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
@@ -115,10 +116,14 @@ fun MovieDetailsScreen(
                             .align(Alignment.TopEnd)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
+                            imageVector = if (state.isFavourite)
+                                Icons.Filled.Favorite
+                            else
+                                Icons.Outlined.FavoriteBorder,
                             contentDescription = "Favourite",
-                            tint = Color.White
+                            tint = if (state.isFavourite) Color.Red else Color.White
                         )
+
                     }
                 }
             }

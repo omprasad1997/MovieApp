@@ -21,7 +21,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun HeroCarousel(
     movies: List<Movie>,
-    onMovieClick: (Movie) -> Unit
+    favouriteIds: Set<String>,              // ✅ ADD
+    onMovieClick: (Movie) -> Unit,
+    onFavouriteClick: (Movie) -> Unit       // ✅ ADD
 ) {
     if (movies.isEmpty()) return
 
@@ -49,13 +51,19 @@ fun HeroCarousel(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
+
+            val movie = movies[page]
+            val isFavourite = favouriteIds.contains(movie.id) // ✅ ADD
+
             HeroPosterCard(
-                movie = movies[page],
-                onClick = { onMovieClick(movies[page]) }
+                movie = movie,
+                isFavourite = isFavourite,                     // ✅ ADD
+                onFavouriteClick = { onFavouriteClick(movie) },// ✅ ADD
+                onClick = { onMovieClick(movie) }
             )
         }
 
-        //Pager Indicators
+        // Pager Indicators
         PagerIndicators(
             pageCount = movies.size,
             currentPage = pagerState.currentPage,
@@ -65,4 +73,5 @@ fun HeroCarousel(
         )
     }
 }
+
 

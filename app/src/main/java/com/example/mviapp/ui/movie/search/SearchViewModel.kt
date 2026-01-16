@@ -2,14 +2,19 @@ package com.example.mviapp.ui.movie.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mviapp.data.model.Movie
 import com.example.mviapp.data.repository.MovieRepository
+import com.example.mviapp.ui.movie.home.HomeIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +30,25 @@ class SearchViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<SearchEffect>()
     val effect = _effect.asSharedFlow()
 
+    init {
+        observeFavourites()
+    }
+
+    private fun observeFavourites() {
+        viewModelScope.launch {
+            repository.getFavouriteIds().collect { ids ->
+                _state.update {
+                    it.copy(favouriteIds = ids)
+                }
+            }
+        }
+    }
+
+    fun isFavourite(imdbId: String): StateFlow<Boolean> =
+        repository.isFavourite(imdbId)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+
+
     private var searchJob: Job? = null
 
     fun handleIntent(intent: SearchIntent) {
@@ -32,6 +56,9 @@ class SearchViewModel @Inject constructor(
             is SearchIntent.SearchMovie -> onSearch(intent.query)
             is SearchIntent.SelectMovie ->
                 emitEffect(SearchEffect.NavigateToMovieDetails(intent.imdbId))
+            is SearchIntent.ToggleFavourite -> {
+                toggleFavourite(intent.movie)
+            }
         }
     }
 
@@ -72,4 +99,16 @@ class SearchViewModel @Inject constructor(
             _effect.emit(effect)
         }
     }
+
+    private fun toggleFavourite(movie: Movie) {
+        viewModelScope.launch {
+            val isFav = repository.isFavourite(movie.id).first()
+            if (isFav) {
+                repository.removeFromFavourites(movie.id)
+            } else {
+                repository.addToFavourites(movie)
+            }
+        }
+    }
+
 }

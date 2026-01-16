@@ -80,11 +80,16 @@ fun SearchMovieScreen(
                         items = state.movies,
                         key = { it.id }
                     ) { movie ->
+
+                        val isFavourite = state.favouriteIds.contains(movie.id)
+
                         TrendingMovieCard(
                             movie = movie,
-                            onClick = {
-                                onIntent(SearchIntent.SelectMovie(movie.id))
-                            }
+                            isFavourite = isFavourite,
+                            onFavouriteClick = {
+                                onIntent(SearchIntent.ToggleFavourite(movie))
+                            },
+                            onClick = { onIntent(SearchIntent.SelectMovie(movie.id)) }
                         )
                     }
                 }

@@ -49,3 +49,28 @@ The project is designed as a **production-ready Android app**, emphasizing:
 
 The app follows **Clean Architecture with MVI (Model–View–Intent)**:
 
+
+## 📱 App Screenshots
+
+## Screenshot
+
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/omprasad1997/MovieApp/blob/2caaf2815d82829c1a387b8a1b865578da0dac4e/readme_asset/Screenshot_20260121_231222.png" width="300"/>
+    </td>
+    <td>
+      <img src="https://github.com/omprasad1997/MovieApp/blob/2caaf2815d82829c1a387b8a1b865578da0dac4e/readme_asset/Screenshot_20260121_231331.png" width="300"/>
+    </td>
+    <td>
+      <img src="https://github.com/omprasad1997/MovieApp/blob/2caaf2815d82829c1a387b8a1b865578da0dac4e/readme_asset/Screenshot_20260121_232025.png" width="300"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="https://github.com/omprasad1997/MovieApp/blob/2caaf2815d82829c1a387b8a1b865578da0dac4e/readme_asset/Screenshot_20260121_232137.png" width="300"/>
+    </td>
+  </tr>
+</table>
+
